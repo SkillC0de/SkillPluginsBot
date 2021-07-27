@@ -2,6 +2,7 @@ package com.skillplugins.bot
 
 import com.skillplugins.bot.config.Config
 import com.skillplugins.bot.config.ConfigLoader
+import com.skillplugins.bot.listeners.CommandListener
 import com.skillplugins.bot.listeners.MessageListener
 import com.skillplugins.bot.misc.Constants
 import net.dv8tion.jda.api.OnlineStatus
@@ -10,7 +11,6 @@ import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.sharding.ShardManager
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.util.concurrent.ConcurrentHashMap
 
 object SkillPluginsBot {
 
@@ -49,6 +49,7 @@ object SkillPluginsBot {
             .setActivity(Constants.ACTIVITY)
             .setStatus(Constants.ONLINE_STATUS)
             .addEventListeners(
+                CommandListener,
                 MessageListener
             ).apply { shardManager = build() }
 

@@ -21,5 +21,7 @@ object Constants {
     const val UNKNOWN_CHANNEL = "Unknown channel."
     const val CHANNEL_ADDED = "The channel has been added."
     const val CHANNEL_PURGED = "This channel has been purged."
+    const val URL_POST = "Please don't post URLs, %s"
+    const val URL_POST_LOG = "%1\$s tried to post an URL: %2\$s"
 
 }

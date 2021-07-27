@@ -32,7 +32,11 @@ object CommandManager {
                 if (!adminCommand
                     || event.member?.hasPermission(Permission.ADMINISTRATOR) == true
                 ) {
-                    onCommand(event, args)
+                    if (deleteMessage) {
+                        event.message.delete().queue { onCommand(event, args) }
+                    } else {
+                        onCommand(event, args)
+                    }
                 } else {
                     MessageUtils.sendMessage(event.textChannel, Constants.NO_PERMISSION, Color.RED)
                 }

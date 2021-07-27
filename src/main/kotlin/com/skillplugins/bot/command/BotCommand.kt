@@ -9,6 +9,9 @@ interface BotCommand {
     val adminCommand: Boolean
         get() = true
 
+    val deleteMessage: Boolean
+        get() = false
+
 
     fun onCommand(
         event: MessageReceivedEvent,

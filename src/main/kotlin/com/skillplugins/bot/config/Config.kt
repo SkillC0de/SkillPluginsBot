@@ -10,4 +10,5 @@ data class Config(
         801405516365430834L,
         800133005657374720L
     ),
+    var trustedURLs: List<String> = listOf()
 ) : JsonConfig("configs/config.json")

@@ -9,6 +9,9 @@ object SendMessageCommand : BotCommand {
     override val commandName: String
         get() = "sendmessage"
 
+    override val deleteMessage: Boolean
+        get() = true
+
     override fun onCommand(event: MessageReceivedEvent, args: MutableList<String>) {
         if (args.size != 0) {
             MessageUtils.sendMessage(event.textChannel, args.joinToString(" "))

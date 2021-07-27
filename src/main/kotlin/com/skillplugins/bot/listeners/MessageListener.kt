@@ -1,9 +1,9 @@
 package com.skillplugins.bot.listeners
 
 import com.skillplugins.bot.SkillPluginsBot
-import com.skillplugins.bot.command.CommandManager
 import com.skillplugins.bot.config.Config
 import com.skillplugins.bot.config.ConfigLoader
+import com.skillplugins.bot.logger.BotLogger
 import com.skillplugins.bot.misc.Constants
 import com.skillplugins.bot.utils.MessageUtils
 import net.dv8tion.jda.api.entities.ChannelType
@@ -19,33 +19,51 @@ object MessageListener : ListenerAdapter() {
     override fun onMessageReceived(event: MessageReceivedEvent) {
         if (event.channel.type != ChannelType.TEXT) return
         val channel = event.textChannel
+        val message = event.message.contentDisplay
+        val args = message.split(" ")
 
-        if (config?.suggestionChannels?.contains(channel.name) == true) {
+        onSuggestionMessage(event, message, args)
+        onLink(event, message, args)
+    }
+
+    private fun onSuggestionMessage(
+        event: MessageReceivedEvent,
+        message: String,
+        args: List<String>,
+    ) {
+        if (config?.suggestionChannels?.contains(event.channel.name) == true) {
             config.suggestionEmojis.forEach {
                 val emote: Emote? = SkillPluginsBot.shardManager?.getEmoteById(it)
                 emote?.let { event.message.addReaction(emote).queue() }
             }
         }
+    }
 
-        //command system
-        val message: String = event.message.contentDisplay
-        if (message.startsWith(Constants.COMMAND_PREFIX, true)) {
-            val split = message.split(" ")
-            val args = mutableListOf<String>()
-            var commandName: String? = null
-            split.map { it.replace(Constants.COMMAND_PREFIX, "") }
-                .forEachIndexed { index, s ->
-                    if (index == 0 && s.isNotEmpty()) {
-                        commandName = s
-                    } else {
-                        args.add(s)
+    private fun onLink(
+        event: MessageReceivedEvent,
+        message: String,
+        args: List<String>,
+    ) {
+        args.forEach { arg ->
+            if (arg.startsWith("http")
+                || arg.startsWith("https")
+            ) {
+                config?.trustedURLs?.forEach {
+                    if (arg.lowercase().contains(it.lowercase())) {
+                        return
                     }
                 }
+                event.message.delete().queue {
+                    MessageUtils.sendMessage(event.textChannel,
+                        String.format(Constants.URL_POST, event.author.name),
+                        Color.RED)
 
-            if (!CommandManager.executeCommandIfExists(event, commandName, args)) {
-                MessageUtils.sendMessage(channel, Constants.UNKNOWN_COMMAND, Color.RED)
+                    BotLogger.log {
+                        MessageUtils.sendMessage(it,
+                            String.format(Constants.URL_POST_LOG, event.author.name, arg), Color.YELLOW)
+                    }
+                }
             }
         }
     }
-
 }
