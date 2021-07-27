@@ -4,7 +4,8 @@ import com.skillplugins.bot.config.ConfigLoader
 
 enum class ChannelType(val channelList: MutableList<String>?) {
     SUGGESTIONS(ConfigLoader.config?.suggestionChannels),
-    LOG(ConfigLoader.config?.logChannels);
+    LOG(ConfigLoader.config?.logChannels),
+    FILE_UPLOAD(ConfigLoader.config?.fileUploadChannels);
 
     companion object {
         fun addListEntry(channelType: ChannelType, channel: String) {

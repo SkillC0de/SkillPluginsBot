@@ -23,5 +23,6 @@ object Constants {
     const val CHANNEL_PURGED = "This channel has been purged."
     const val URL_POST = "Please don't post URLs, %s"
     const val URL_POST_LOG = "%1\$s tried to post an URL: %2\$s"
+    const val FILE_UPLOAD = "Please use upload services such as https://pastebin.com/ to upload files, %s"
 
 }

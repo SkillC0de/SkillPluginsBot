@@ -24,6 +24,7 @@ object MessageListener : ListenerAdapter() {
 
         onSuggestionMessage(event, message, args)
         onLink(event, message, args)
+        onFileEmbed(event, message, args)
     }
 
     private fun onSuggestionMessage(
@@ -61,6 +62,28 @@ object MessageListener : ListenerAdapter() {
                     BotLogger.log {
                         MessageUtils.sendMessage(it,
                             String.format(Constants.URL_POST_LOG, event.author.name, arg), Color.YELLOW)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun onFileEmbed(
+        event: MessageReceivedEvent,
+        message: String,
+        args: List<String>,
+    ) {
+        if (config?.fileUploadChannels?.contains(event.textChannel.name) == false) {
+            val attachments = event.message.attachments
+            if (attachments.isNotEmpty()) {
+                attachments.forEach {
+                    if (!it.isImage && !it.isVideo) {
+                        event.message.delete().queue {
+                            MessageUtils.sendMessage(event.textChannel,
+                                String.format(Constants.FILE_UPLOAD, event.author.name),
+                                Color.RED)
+                        }
+                        return
                     }
                 }
             }
