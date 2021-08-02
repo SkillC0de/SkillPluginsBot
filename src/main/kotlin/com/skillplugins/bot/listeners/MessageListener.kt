@@ -6,6 +6,7 @@ import com.skillplugins.bot.config.ConfigLoader
 import com.skillplugins.bot.logger.BotLogger
 import com.skillplugins.bot.misc.Constants
 import com.skillplugins.bot.utils.MessageUtils
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.entities.Emote
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -45,23 +46,25 @@ object MessageListener : ListenerAdapter() {
         message: String,
         args: List<String>,
     ) {
-        args.forEach { arg ->
-            if (arg.startsWith("http")
-                || arg.startsWith("https")
-            ) {
-                config?.trustedURLs?.forEach {
-                    if (arg.lowercase().contains(it.lowercase())) {
-                        return
+        if (event.member?.hasPermission(Permission.ADMINISTRATOR) == false) {
+            args.forEach { arg ->
+                if (arg.startsWith("http")
+                    || arg.startsWith("https")
+                ) {
+                    config?.trustedURLs?.forEach {
+                        if (arg.lowercase().contains(it.lowercase())) {
+                            return
+                        }
                     }
-                }
-                event.message.delete().queue {
-                    MessageUtils.sendMessage(event.textChannel,
-                        String.format(Constants.URL_POST, event.author.name),
-                        Color.RED)
+                    event.message.delete().queue {
+                        MessageUtils.sendMessage(event.textChannel,
+                            String.format(Constants.URL_POST, event.author.name),
+                            Color.RED)
 
-                    BotLogger.log {
-                        MessageUtils.sendMessage(it,
-                            String.format(Constants.URL_POST_LOG, event.author.name, arg), Color.YELLOW)
+                        BotLogger.log {
+                            MessageUtils.sendMessage(it,
+                                String.format(Constants.URL_POST_LOG, event.author.name, arg), Color.YELLOW)
+                        }
                     }
                 }
             }
